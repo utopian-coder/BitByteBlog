@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Path
+from typing import Annotated
 from bson import ObjectId
 from ..config.database import mongo_client
 from ..schemas.blog_schema import serialize_all_blog, serialize_blog
@@ -39,7 +40,7 @@ def create_blog(blog: Blog):
         raise HTTPException(status_code=500, detail="Something went wrong, try again!")
     
 @router.delete('/{blog_id}', status_code=204)
-def delete_blog(blog_id):
+def delete_blog(blog_id: Annotated[str, Path(title="The id of the item to get!")]):
     try:
         blog_collection.find_one_and_delete({"_id": ObjectId(blog_id)})
         return {"status": "success", "message": "Successfully deleted!"}
